@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+require('ts-node/register');
 const { measureCoverage } = require('../dist');
 
 async function run() {

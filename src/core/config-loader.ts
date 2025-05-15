@@ -26,16 +26,21 @@ export async function loadConfigFromFile(configPath: string): Promise<Config | n
     // Vitest handles TypeScript compilation, so ts-node/register is not needed here for tests.
     // For actual CLI execution, ensure ts-node or a similar mechanism is used if running .ts directly.
     const importedConfigModule = await dynamicImportWrapper(absolutePath);
-    const config: Config = importedConfigModule.default;
+    const baseConfig: Omit<Config, 'baseDir'> = importedConfigModule.default;
 
     // Basic validation
-    if (!config) {
+    if (!baseConfig) {
       throw new Error('Configuration file does not export a default configuration object');
     }
 
-    if (!Array.isArray(config.requirements) || !Array.isArray(config.tests)) {
+    if (!Array.isArray(baseConfig.requirements) || !Array.isArray(baseConfig.tests)) {
       throw new Error('Configuration must include requirements and tests arrays');
     }
+
+    const config: Config = {
+      ...baseConfig,
+      baseDir: path.dirname(absolutePath),
+    };
 
     return config;
   } catch (error) {

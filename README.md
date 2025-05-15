@@ -162,6 +162,9 @@ pnpm build
 
 # Run tests
 pnpm test
+
+# Execute
+pnpm run build && node bin/spec-trace.js examples/spec-matcher.config.ts
 ```
 
 ### Code Quality Tools

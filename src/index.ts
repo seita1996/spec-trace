@@ -44,10 +44,12 @@ export async function measureCoverage(options: Options): Promise<CoverageResult>
     throw new Error(`Failed to load or validate config from ${options.configPath}.`);
   }
 
-  const requirements = await parseRequirements(config.requirements);
+  // baseDir is guaranteed to be set by loadConfigFromFile
+  const requirements = await parseRequirements(config.requirements, config.baseDir!);
   const { linkedRequirements, allTestResults } = await linkTestsAndGetResults(
     requirements,
-    config.tests
+    config.tests,
+    config.baseDir!
   );
   const coverageResult = calculateCoverage(linkedRequirements, allTestResults);
 

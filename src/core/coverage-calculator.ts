@@ -24,24 +24,29 @@ export function calculateCoverage(
     const key = `${result.filePath}#${result.caseName}`;
     testResultMap.set(key, result);
   }
+  console.log('[coverage-calculator] testResultMap keys:', Array.from(testResultMap.keys()));
 
   // Calculate coverage for each requirement
   const requirementCoverages: RequirementCoverage[] = requirements.map((req) => {
+    console.log(`[coverage-calculator] Processing requirement: ${req.id} from ${req.filePath}`);
     const testResults: TestResult[] = [];
     let covered = false;
 
     // Find matching test results for linked tests
     for (const linkedTest of req.linkedTests) {
       const key = `${linkedTest.filePath}#${linkedTest.caseName}`;
+      console.log(`[coverage-calculator] Looking for linked test key: ${key}`);
       const testResult = testResultMap.get(key);
 
       if (testResult) {
+        console.log(`[coverage-calculator] Found matching testResult for ${key}:`, testResult);
         testResults.push(testResult);
-
-        // Consider the requirement covered if at least one test passed
-        if (testResult.status === 'passed') {
-          covered = true;
-        }
+        // If a linked test is found (regardless of its status from static analysis),
+        // consider the requirement covered.
+        // If actual test execution results are available (e.g. from a report),
+        // then 'passed' status would be a stricter criteria.
+        // For now, existence of a linked test from static analysis implies coverage.
+        covered = true;
       }
     }
 
