@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Config } from '../types';
+import { dynamicImportWrapper } from './importer';
 
 /**
  * Loads configuration from a TypeScript file.
@@ -21,25 +22,11 @@ export async function loadConfigFromFile(configPath: string): Promise<Config | n
       throw new Error(`Configuration file not found at ${absolutePath}`);
     }
 
-    // Try to dynamically import the configuration
-    // Note: This requires ts-node/register for .ts files
-    let config: Config;
-
-    // Check if it's a TypeScript file
-    if (absolutePath.endsWith('.ts')) {
-      try {
-        // Try to load ts-node
-        require('ts-node/register');
-      } catch (error) {
-        throw new Error(
-          'ts-node is required to load TypeScript configuration files. Please install it as a dependency.'
-        );
-      }
-    }
-
     // Dynamic import the configuration file
-    const importedConfig = await import(absolutePath);
-    config = importedConfig.default;
+    // Vitest handles TypeScript compilation, so ts-node/register is not needed here for tests.
+    // For actual CLI execution, ensure ts-node or a similar mechanism is used if running .ts directly.
+    const importedConfigModule = await dynamicImportWrapper(absolutePath);
+    const config: Config = importedConfigModule.default;
 
     // Basic validation
     if (!config) {

@@ -93,15 +93,16 @@ async function parseRequirementsFromFile(
           // Find linked tests if linkMarkerPattern is provided
           if (source.linkMarkerPattern) {
             const linkRegex = new RegExp(source.linkMarkerPattern, 'g');
-            let linkMatch;
+            let linkMatch = linkRegex.exec(fileContent);
 
-            while ((linkMatch = linkRegex.exec(fileContent)) !== null) {
+            while (linkMatch !== null) {
               if (linkMatch.length >= 3) {
                 requirement.linkedTests.push({
                   filePath: linkMatch[1],
                   caseName: linkMatch[2],
                 });
               }
+              linkMatch = linkRegex.exec(fileContent);
             }
           }
 
