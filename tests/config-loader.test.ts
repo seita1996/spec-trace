@@ -42,6 +42,7 @@ vi.mock('path', async (importActual) => {
 // Mock dynamic import
 const mockConfig = {
   default: {
+    baseDir: '../examples', // Added baseDir to mock config
     requirements: [
       {
         id: 'test-requirements',
