@@ -1,4 +1,4 @@
-# Spec-Trace
+# SpecTrace
 
 A library for linking system requirements with test cases and measuring specification coverage.
 
@@ -71,6 +71,34 @@ async function runCoverageAnalysis() {
 }
 
 runCoverageAnalysis();
+```
+
+## CLI Usage
+
+You can also use the CLI tool to measure specification coverage:
+
+```bash
+# Using npx
+npx spec-trace [path/to/your/config.ts]
+
+# Or, if installed globally
+spec-trace [path/to/your/config.ts]
+```
+
+If no configuration path is provided, it defaults to `./spec-matcher.config.ts`.
+
+The CLI will output a report similar to this:
+
+```
+Specification Coverage Report:
+------------------------------
+Total Requirements: 10
+Covered Requirements: 8
+Coverage Percentage: 80.00%
+
+Uncovered Requirements:
+- REQ-009: Another Feature (in docs/specs/another-feature.md)
+- REQ-010: Yet Another Feature (in docs/specs/yet-another-feature.md)
 ```
 
 ## Configuration

@@ -1,3 +1,4 @@
+// @ts-ignore this is example file
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication API', () => {
