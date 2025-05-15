@@ -1,0 +1,53 @@
+{
+  "name": "spec-trace",
+  "version": "0.1.0",
+  "description": "A library for linking system requirements with test cases and measuring specification coverage",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "spec-trace": "./bin/spec-trace.js"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome lint ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check --apply ./src",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "keywords": [
+    "requirements",
+    "specifications",
+    "tests",
+    "coverage",
+    "traceability"
+  ],
+  "author": "seitaro",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^8.1.0",
+    "marked": "^5.1.1",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.4.0",
+    "@types/glob": "^8.1.0",
+    "@types/marked": "^5.0.1",
+    "@types/node": "^20.2.5",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
