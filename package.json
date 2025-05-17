@@ -32,7 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "glob": "^8.1.0",
-    "marked": "^5.1.1",
+    "marked": "^15.0.11",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
