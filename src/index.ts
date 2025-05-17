@@ -45,11 +45,11 @@ export async function measureCoverage(options: Options): Promise<CoverageResult>
   }
 
   // baseDir is guaranteed to be set by loadConfigFromFile
-  const requirements = await parseRequirements(config.requirements, config.baseDir!);
+  const requirements = await parseRequirements(config.requirements, config.baseDir);
   const { linkedRequirements, allTestResults } = await linkTestsAndGetResults(
     requirements,
     config.tests,
-    config.baseDir!
+    config.baseDir
   );
   const coverageResult = calculateCoverage(linkedRequirements, allTestResults);
 

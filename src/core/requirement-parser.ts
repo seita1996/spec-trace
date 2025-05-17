@@ -1,8 +1,8 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import glob from 'glob';
 import { marked } from 'marked';
 import type { Requirement, RequirementSource } from '../types';
-import * as path from 'path';
 
 /**
  * Parses requirements from Markdown files based on the configuration.
@@ -15,11 +15,16 @@ export async function parseRequirements(
   requirementSources: RequirementSource[],
   baseDir: string
 ): Promise<Requirement[]> {
-  console.log(`[requirement-parser] Starting parseRequirements. baseDir: ${baseDir}`, requirementSources);
+  console.log(
+    `[requirement-parser] Starting parseRequirements. baseDir: ${baseDir}`,
+    requirementSources
+  );
   const allRequirements: Requirement[] = [];
 
   for (const source of requirementSources) {
-    console.log(`[requirement-parser] Processing requirement source: ${source.id}, path: ${source.path}`);
+    console.log(
+      `[requirement-parser] Processing requirement source: ${source.id}, path: ${source.path}`
+    );
     const files = await findFiles(source.path, baseDir);
 
     for (const filePath of files) {
@@ -40,7 +45,9 @@ export async function parseRequirements(
  * @returns Array of matching file paths
  */
 async function findFiles(pattern: string, baseDir: string): Promise<string[]> {
-  console.log(`[requirement-parser] findFiles called with pattern: ${pattern}, baseDir: ${baseDir}`);
+  console.log(
+    `[requirement-parser] findFiles called with pattern: ${pattern}, baseDir: ${baseDir}`
+  );
   return new Promise((resolve, reject) => {
     // Resolve the pattern against the base directory
     const absolutePattern = path.isAbsolute(pattern) ? pattern : path.join(baseDir, pattern);
@@ -50,7 +57,7 @@ async function findFiles(pattern: string, baseDir: string): Promise<string[]> {
         console.error(`[requirement-parser] Error in glob: ${err}`);
         reject(err);
       } else {
-        console.log(`[requirement-parser] Glob found matches:`, matches);
+        console.log('[requirement-parser] Glob found matches:', matches);
         resolve(matches);
       }
     });
@@ -76,7 +83,10 @@ async function parseRequirementsFromFile(
 
   // Parse the Markdown content into tokens
   const tokens = marked.lexer(fileContent);
-  console.log(`[requirement-parser] Tokens for ${filePath}:`, JSON.stringify(tokens.slice(0, 5), null, 2)); // Log first 5 tokens
+  console.log(
+    `[requirement-parser] Tokens for ${filePath}:`,
+    JSON.stringify(tokens.slice(0, 5), null, 2)
+  ); // Log first 5 tokens
 
   // Extract requirements based on idPattern
   if (source.idPattern) {
@@ -85,14 +95,25 @@ async function parseRequirementsFromFile(
 
     // Process heading tokens
     for (const token of tokens) {
-      console.log(`[requirement-parser] Processing token: type=${token.type}, text=${(token as any).text?.substring(0,50)}`);
+      console.log(
+        `[requirement-parser] Processing token: type=${token.type}, text=${
+          'text' in token && typeof token.text === 'string' ? token.text.substring(0, 50) : ''
+        }`
+      );
       if (token.type === 'heading') {
-        console.log(`[requirement-parser] Found heading token: depth=${token.depth}, text=${token.text}`);
+        console.log(
+          `[requirement-parser] Found heading token: depth=${token.depth}, text=${token.text}`
+        );
         const match = token.text.match(regex);
-        console.log(`[requirement-parser] Regex match result for "${token.text}" with pattern "${source.idPattern}":`, match);
+        console.log(
+          `[requirement-parser] Regex match result for "${token.text}" with pattern "${source.idPattern}":`,
+          match
+        );
 
         if (match && match.length >= 3) {
-          console.log(`[requirement-parser] Matched requirement: id=${match[1]}, title=${match[2]}`);
+          console.log(
+            `[requirement-parser] Matched requirement: id=${match[1]}, title=${match[2]}`
+          );
           const id = match[1];
           const title = match[2];
 

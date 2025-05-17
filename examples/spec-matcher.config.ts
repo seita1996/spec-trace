@@ -1,6 +1,7 @@
 import type { Config } from '../src/types';
 
 const config: Config = {
+  baseDir: '.',
   requirements: [
     {
       id: 'user-stories',
@@ -15,7 +16,7 @@ const config: Config = {
       id: 'functional-specs',
       type: 'markdown',
       path: './docs/specs/*.md',
-      idPattern: "^(FS-\\d+):\\s+(.*)", // Removed "###\\s+"
+      idPattern: "^(FS-\\d+):\\s+(.*)",
       linkMarkerPattern: "@test:\\s*(\\S+)#(\\S+)",
     },
   ],

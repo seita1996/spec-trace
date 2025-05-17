@@ -2,7 +2,7 @@
 
 // Configuration for the library
 export interface Config {
-  baseDir?: string; // Base directory for resolving relative paths in the config, set by loader
+  baseDir: string; // Base directory for resolving relative paths in the config, set by loader
   requirements: RequirementSource[];
   tests: TestSource[];
   outputDir?: string; // Future: Report output directory

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import type { Requirement, TestResult, TestSource } from '../types';
 import * as path from 'path';
 import glob from 'glob';
+import type { Requirement, TestResult, TestSource } from '../types';
 
 /**
  * Links requirements with test results and returns linked requirements and all test results.
@@ -34,7 +34,9 @@ export async function linkTestsAndGetResults(
       // If report parsing fails (e.g., file not found, returns empty) and source.path exists,
       // attempt to extract from files as a fallback.
       if (testResults.length === 0 && source.path) {
-        console.log(`[test-linker] Report not found or empty for ${source.id}. Falling back to static analysis.`);
+        console.log(
+          `[test-linker] Report not found or empty for ${source.id}. Falling back to static analysis.`
+        );
         testResults = await extractTestIdentifiersFromFiles(source, baseDir);
       }
     } else if (source.path) {
@@ -63,7 +65,10 @@ export async function linkTestsAndGetResults(
  * @param baseDir The base directory for resolving the report path
  * @returns Array of test results
  */
-async function parseTestResultsFromReport(source: TestSource, baseDir: string): Promise<TestResult[]> {
+async function parseTestResultsFromReport(
+  source: TestSource,
+  baseDir: string
+): Promise<TestResult[]> {
   if (!source.reportPath) {
     return [];
   }
@@ -83,7 +88,9 @@ async function parseTestResultsFromReport(source: TestSource, baseDir: string): 
         for (const testFile of reportData.testResults) {
           for (const testCase of testFile.assertionResults) {
             // Resolve filePath from report relative to baseDir if it's not absolute
-            const resolvedFilePath = path.isAbsolute(testFile.name) ? testFile.name : path.resolve(baseDir, testFile.name);
+            const resolvedFilePath = path.isAbsolute(testFile.name)
+              ? testFile.name
+              : path.resolve(baseDir, testFile.name);
             testResults.push({
               filePath: resolvedFilePath,
               caseName: testCase.fullName || testCase.title,
@@ -100,7 +107,9 @@ async function parseTestResultsFromReport(source: TestSource, baseDir: string): 
         for (const suite of reportData.suites) {
           for (const test of suite.specs) {
             // Resolve filePath from report relative to baseDir if it's not absolute
-            const resolvedFilePath = path.isAbsolute(suite.file) ? suite.file : path.resolve(baseDir, suite.file);
+            const resolvedFilePath = path.isAbsolute(suite.file)
+              ? suite.file
+              : path.resolve(baseDir, suite.file);
             testResults.push({
               filePath: resolvedFilePath,
               caseName: test.title,
@@ -128,14 +137,19 @@ async function parseTestResultsFromReport(source: TestSource, baseDir: string): 
  * @param baseDir The base directory for resolving the source path
  * @returns Array of test results (with unknown status)
  */
-async function extractTestIdentifiersFromFiles(source: TestSource, baseDir: string): Promise<TestResult[]> {
+async function extractTestIdentifiersFromFiles(
+  source: TestSource,
+  baseDir: string
+): Promise<TestResult[]> {
   const testResults: TestResult[] = [];
   if (!source.path) {
     return testResults;
   }
 
   const absoluteSourcePattern = path.resolve(baseDir, source.path);
-  console.log(`[test-linker] Globbing for test files with pattern: ${absoluteSourcePattern} (type: ${source.type})`);
+  console.log(
+    `[test-linker] Globbing for test files with pattern: ${absoluteSourcePattern} (type: ${source.type})`
+  );
 
   try {
     const files = await new Promise<string[]>((resolve, reject) => {
@@ -145,7 +159,7 @@ async function extractTestIdentifiersFromFiles(source: TestSource, baseDir: stri
       });
     });
 
-    console.log(`[test-linker] Found test files:`, files);
+    console.log('[test-linker] Found test files:', files);
 
     // Simplified regex to find test/it blocks. This is very basic.
     // It looks for `test('name', ...)` or `it('name', ...)`
@@ -155,8 +169,8 @@ async function extractTestIdentifiersFromFiles(source: TestSource, baseDir: stri
     for (const filePath of files) {
       try {
         const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-        let match;
-        while ((match = testCaseRegex.exec(fileContent)) !== null) {
+        let match = testCaseRegex.exec(fileContent);
+        while (match !== null) {
           const caseName = match[1];
           console.log(`[test-linker] Found test case: "${caseName}" in ${filePath}`);
           testResults.push({
@@ -164,15 +178,19 @@ async function extractTestIdentifiersFromFiles(source: TestSource, baseDir: stri
             caseName: caseName,
             status: 'pending', // Static analysis cannot determine status
           });
+          match = testCaseRegex.exec(fileContent);
         }
       } catch (readError) {
         console.error(`[test-linker] Error reading test file ${filePath}:`, readError);
       }
     }
   } catch (globError) {
-    console.error(`[test-linker] Error globbing for test files with pattern ${absoluteSourcePattern}:`, globError);
+    console.error(
+      `[test-linker] Error globbing for test files with pattern ${absoluteSourcePattern}:`,
+      globError
+    );
   }
 
-  console.log(`[test-linker] Extracted test identifiers:`, testResults);
+  console.log('[test-linker] Extracted test identifiers:', testResults);
   return testResults;
 }
