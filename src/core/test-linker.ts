@@ -34,9 +34,9 @@ export async function linkTestsAndGetResults(
       // If report parsing fails (e.g., file not found, returns empty) and source.path exists,
       // attempt to extract from files as a fallback.
       if (testResults.length === 0 && source.path) {
-        console.log(
-          `[test-linker] Report not found or empty for ${source.id}. Falling back to static analysis.`
-        );
+        // console.log(
+        //   `[test-linker] Report not found or empty for ${source.id}. Falling back to static analysis.`
+        // );
         testResults = await extractTestIdentifiersFromFiles(source, baseDir);
       }
     } else if (source.path) {
@@ -147,9 +147,9 @@ async function extractTestIdentifiersFromFiles(
   }
 
   const absoluteSourcePattern = path.resolve(baseDir, source.path);
-  console.log(
-    `[test-linker] Globbing for test files with pattern: ${absoluteSourcePattern} (type: ${source.type})`
-  );
+  // console.log(
+  //   `[test-linker] Globbing for test files with pattern: ${absoluteSourcePattern} (type: ${source.type})`
+  // );
 
   try {
     const files = await new Promise<string[]>((resolve, reject) => {
@@ -159,7 +159,7 @@ async function extractTestIdentifiersFromFiles(
       });
     });
 
-    console.log('[test-linker] Found test files:', files);
+    // console.log('[test-linker] Found test files:', files);
 
     // Simplified regex to find test/it blocks. This is very basic.
     // It looks for `test('name', ...)` or `it('name', ...)`
@@ -172,7 +172,7 @@ async function extractTestIdentifiersFromFiles(
         let match = testCaseRegex.exec(fileContent);
         while (match !== null) {
           const caseName = match[1];
-          console.log(`[test-linker] Found test case: "${caseName}" in ${filePath}`);
+          // console.log(`[test-linker] Found test case: "${caseName}" in ${filePath}`);
           testResults.push({
             filePath: filePath, // Store absolute path
             caseName: caseName,
@@ -191,6 +191,6 @@ async function extractTestIdentifiersFromFiles(
     );
   }
 
-  console.log('[test-linker] Extracted test identifiers:', testResults);
+  // console.log('[test-linker] Extracted test identifiers:', testResults);
   return testResults;
 }
