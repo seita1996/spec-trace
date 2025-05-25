@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { parseRequirements } from '../src/core/requirement-parser';
-import * as fs from 'fs';
-import glob from 'glob';
+import * as fs from 'node:fs';
+import { glob } from 'glob';
 import { marked } from 'marked';
 import type { RequirementSource } from '../src/types';
 
@@ -12,7 +12,9 @@ vi.mock('fs', () => ({
   },
 }));
 
-vi.mock('glob');
+vi.mock('glob', () => ({
+  glob: vi.fn(),
+}));
 
 vi.mock('marked', () => ({
   marked: {
@@ -30,11 +32,8 @@ describe('Requirement Parser', () => {
   });
   
   it('should parse requirements from Markdown files', async () => {
-    // Mock glob to return a single file
-    (glob as Mock).mockImplementation((pattern: string, options: any, cb: (err: Error | null, matches: string[]) => void) => {
-      cb(null, ['path/to/requirements.md']);
-      return undefined as any;
-    });
+    // Mock glob to return a single file - v11 returns Promise
+    (glob as unknown as Mock).mockResolvedValue(['path/to/requirements.md']);
     
     // Mock file content
     const markdownContent = `# Requirements Document
@@ -67,11 +66,11 @@ User story description here.
     ];
     
     // Call the function
-    const requirements = await parseRequirements(requirementSources, process.cwd());
+    await parseRequirements(requirementSources, process.cwd());
     
     // Assertions
-    const expectedGlobPattern = require('path').join(process.cwd(), './docs/**/*.md');
-    expect(glob).toHaveBeenCalledWith(expectedGlobPattern, { absolute: true }, expect.any(Function));
+    const expectedGlobPattern = require('node:path').join(process.cwd(), './docs/**/*.md');
+    expect(glob).toHaveBeenCalledWith(expectedGlobPattern, { absolute: true });
     expect(fs.promises.readFile).toHaveBeenCalledWith('path/to/requirements.md', 'utf-8');
     expect(marked.lexer).toHaveBeenCalledWith(markdownContent);
     
