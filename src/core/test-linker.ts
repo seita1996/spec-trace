@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import glob from 'glob';
+import { glob } from 'glob';
 import type { Requirement, TestResult, TestSource } from '../types';
 
 /**
@@ -152,12 +152,7 @@ async function extractTestIdentifiersFromFiles(
   // );
 
   try {
-    const files = await new Promise<string[]>((resolve, reject) => {
-      glob(absoluteSourcePattern, { absolute: true }, (err, matches) => {
-        if (err) reject(err);
-        else resolve(matches);
-      });
-    });
+    const files = await glob(absoluteSourcePattern, { absolute: true });
 
     // console.log('[test-linker] Found test files:', files);
 

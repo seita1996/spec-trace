@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import glob from 'glob';
+import { glob } from 'glob';
 import { marked } from 'marked';
 import type { Requirement, RequirementSource } from '../types';
 
@@ -52,17 +52,14 @@ async function findFiles(pattern: string, baseDir: string): Promise<string[]> {
   const absolutePattern = path.isAbsolute(pattern) ? pattern : path.join(baseDir, pattern);
   // console.log(`[requirement-parser] Globbing with absolute pattern: ${absolutePattern}`);
 
-  return new Promise((resolve, reject) => {
-    glob(absolutePattern, { absolute: true }, (err, matches) => {
-      if (err) {
-        console.error(`[requirement-parser] Error in glob: ${err}`);
-        reject(err);
-      } else {
-        // console.log('[requirement-parser] Glob found matches:', matches);
-        resolve(matches);
-      }
-    });
-  });
+  try {
+    const matches = await glob(absolutePattern, { absolute: true });
+    // console.log('[requirement-parser] Glob found matches:', matches);
+    return matches;
+  } catch (err) {
+    console.error(`[requirement-parser] Error in glob: ${err}`);
+    throw err;
+  }
 }
 
 /**
