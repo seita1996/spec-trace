@@ -15,7 +15,7 @@ program
   .description(
     'A library for linking system requirements with test cases and measuring specification coverage',
   )
-  .version('0.1.1');
+  .version('0.1.2');
 
 program
   .option('--config <path>', 'Path to configuration file', './spec-matcher.config.ts')
