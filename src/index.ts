@@ -1,8 +1,10 @@
 import { loadConfigFromFile } from './core/config-loader';
 import { calculateCoverage } from './core/coverage-calculator';
+import { MarkdownReporter } from './core/markdown-reporter';
 import { parseRequirements } from './core/requirement-parser';
 import { linkTestsAndGetResults } from './core/test-linker';
 import type {
+  CLIOptions,
   Config,
   CoverageResult,
   CoverageSummary,
@@ -25,6 +27,7 @@ export type {
   TestIdentifier,
   RequirementSource,
   TestSource,
+  CLIOptions,
 };
 
 // Options for the main function
@@ -49,7 +52,7 @@ export async function measureCoverage(options: Options): Promise<CoverageResult>
   const { linkedRequirements, allTestResults } = await linkTestsAndGetResults(
     requirements,
     config.tests,
-    config.baseDir
+    config.baseDir,
   );
   const coverageResult = calculateCoverage(linkedRequirements, allTestResults);
 
@@ -57,4 +60,10 @@ export async function measureCoverage(options: Options): Promise<CoverageResult>
 }
 
 // Re-export individual functions for flexibility
-export { loadConfigFromFile, parseRequirements, linkTestsAndGetResults, calculateCoverage };
+export {
+  loadConfigFromFile,
+  parseRequirements,
+  linkTestsAndGetResults,
+  calculateCoverage,
+  MarkdownReporter,
+};

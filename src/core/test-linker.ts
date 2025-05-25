@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import glob from 'glob';
 import type { Requirement, TestResult, TestSource } from '../types';
 
@@ -14,7 +14,7 @@ import type { Requirement, TestResult, TestSource } from '../types';
 export async function linkTestsAndGetResults(
   requirements: Requirement[],
   testSources: TestSource[],
-  baseDir: string
+  baseDir: string,
 ): Promise<{
   linkedRequirements: Requirement[];
   allTestResults: TestResult[];
@@ -67,7 +67,7 @@ export async function linkTestsAndGetResults(
  */
 async function parseTestResultsFromReport(
   source: TestSource,
-  baseDir: string
+  baseDir: string,
 ): Promise<TestResult[]> {
   if (!source.reportPath) {
     return [];
@@ -139,7 +139,7 @@ async function parseTestResultsFromReport(
  */
 async function extractTestIdentifiersFromFiles(
   source: TestSource,
-  baseDir: string
+  baseDir: string,
 ): Promise<TestResult[]> {
   const testResults: TestResult[] = [];
   if (!source.path) {
@@ -153,7 +153,7 @@ async function extractTestIdentifiersFromFiles(
 
   try {
     const files = await new Promise<string[]>((resolve, reject) => {
-      glob(absoluteSourcePattern, (err, matches) => {
+      glob(absoluteSourcePattern, { absolute: true }, (err, matches) => {
         if (err) reject(err);
         else resolve(matches);
       });
@@ -187,7 +187,7 @@ async function extractTestIdentifiersFromFiles(
   } catch (globError) {
     console.error(
       `[test-linker] Error globbing for test files with pattern ${absoluteSourcePattern}:`,
-      globError
+      globError,
     );
   }
 

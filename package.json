@@ -5,11 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "bin",
     "dist"
   ],
   "bin": {
-    "spec-trace": "./bin/spec-trace.js"
+    "spec-trace": "./dist/cli.js"
   },
   "scripts": {
     "clean": "rimraf dist",
@@ -19,7 +18,10 @@
     "test:coverage": "vitest run --coverage",
     "lint": "biome lint ./src",
     "format": "biome format --write ./src",
-    "check": "biome check --apply ./src",
+    "check": "biome check --write ./src",
+    "debug": "node dist/cli.js",
+    "debug:help": "node dist/cli.js --help",
+    "debug:ts": "ts-node src/cli.ts",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "keywords": [
@@ -32,12 +34,13 @@
   "author": "seitaro",
   "license": "MIT",
   "dependencies": {
+    "commander": "^14.0.0",
     "glob": "^8.1.0",
     "marked": "^15.0.11",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.4.0",
+    "@biomejs/biome": "1.9.4",
     "@types/glob": "^8.1.0",
     "@types/marked": "^5.0.1",
     "@types/node": "^22.15.19",

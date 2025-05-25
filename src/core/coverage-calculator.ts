@@ -15,7 +15,7 @@ import type {
  */
 export function calculateCoverage(
   requirements: Requirement[],
-  testResults: TestResult[]
+  testResults: TestResult[],
 ): CoverageResult {
   // Create a map of test results for quick lookup
   const testResultMap = new Map<string, TestResult>();

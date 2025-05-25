@@ -64,3 +64,11 @@ export interface CoverageResult {
   requirements: RequirementCoverage[];
   summary: CoverageSummary;
 }
+
+// CLI Options interface
+export interface CLIOptions {
+  config?: string; // Path to configuration file
+  verbose?: boolean; // Enable verbose logging
+  json?: boolean; // Output in JSON format
+  summaryOnly?: boolean; // Output only summary text
+}

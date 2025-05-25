@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import glob from 'glob';
 import { marked } from 'marked';
 import type { Requirement, RequirementSource } from '../types';
@@ -13,7 +13,7 @@ import type { Requirement, RequirementSource } from '../types';
  */
 export async function parseRequirements(
   requirementSources: RequirementSource[],
-  baseDir: string
+  baseDir: string,
 ): Promise<Requirement[]> {
   // console.log(
   //   `[requirement-parser] Starting parseRequirements. baseDir: ${baseDir}`,
@@ -48,11 +48,12 @@ async function findFiles(pattern: string, baseDir: string): Promise<string[]> {
   // console.log(
   //   `[requirement-parser] findFiles called with pattern: ${pattern}, baseDir: ${baseDir}`
   // );
+  // Resolve the pattern against the base directory
+  const absolutePattern = path.isAbsolute(pattern) ? pattern : path.join(baseDir, pattern);
+  // console.log(`[requirement-parser] Globbing with absolute pattern: ${absolutePattern}`);
+
   return new Promise((resolve, reject) => {
-    // Resolve the pattern against the base directory
-    const absolutePattern = path.isAbsolute(pattern) ? pattern : path.join(baseDir, pattern);
-    // console.log(`[requirement-parser] Globbing with absolute pattern: ${absolutePattern}`);
-    glob(absolutePattern, (err, matches) => {
+    glob(absolutePattern, { absolute: true }, (err, matches) => {
       if (err) {
         console.error(`[requirement-parser] Error in glob: ${err}`);
         reject(err);
@@ -75,7 +76,7 @@ async function findFiles(pattern: string, baseDir: string): Promise<string[]> {
 async function parseRequirementsFromFile(
   filePath: string, // This filePath is already absolute from findFiles
   source: RequirementSource,
-  baseDir: string // baseDir of the config file, used for resolving linked test paths
+  baseDir: string, // baseDir of the config file, used for resolving linked test paths
 ): Promise<Requirement[]> {
   // console.log(`[requirement-parser] parseRequirementsFromFile called for: ${filePath}`);
   const requirements: Requirement[] = [];

@@ -40,26 +40,87 @@ describe('Integration Test', () => {
     }
   });
 
-  it('should output 100% coverage for spec-matcher.config.ts', () => {
-    const command = `pnpm run build && node ${path.join(__dirname, '..', 'bin', 'spec-trace.js')} ${path.join(examplesDir, 'spec-matcher.config.ts')}`;
+  it('should output markdown report with 100% coverage', () => {
+    const command = `node ${path.join(__dirname, '..', 'dist', 'cli.js')} --config ${path.join(examplesDir, 'spec-matcher.config.ts')}`;
+    
+    try {
+      // Ignore stderr as it contains expected warnings about missing test reports
+      const output = execSync(command, { encoding: 'utf-8' });
+
+      // Check for markdown report format
+      expect(output).toContain('# Specification Coverage Report');
+      expect(output).toContain('## Summary');
+      expect(output).toContain('🟢 **Coverage: 100.00%**');
+      expect(output).toContain('- **Total Requirements:** 4');
+      expect(output).toContain('- **Covered Requirements:** 4');
+      expect(output).toContain('- **Uncovered Requirements:** 0');
+      expect(output).toContain('## Requirements');
+      expect(output).toContain('### Table of Contents');
+    } catch (error: any) {
+      // For debugging: output both stdout and stderr
+      console.error('Command failed:', command);
+      console.error('stdout:', error.stdout?.toString());
+      console.error('stderr:', error.stderr?.toString());
+      throw error;
+    }
+  });
+
+  it('should output summary only when --summary-only flag is used', () => {
+    const command = `node ${path.join(__dirname, '..', 'dist', 'cli.js')} --config ${path.join(examplesDir, 'spec-matcher.config.ts')} --summary-only`;
     
     try {
       const output = execSync(command, { encoding: 'utf-8' });
 
-      const expectedOutput = `
-Specification Coverage Report:
-------------------------------
-Total Requirements: 4
-Covered Requirements: 4
-Coverage Percentage: 100.00
-`.trim(); // trim() を使って前後の空白を削除
+      // Check for summary format
+      expect(output).toContain('Found 4 requirement(s) total, 4 covered, 100.00% coverage.');
+      // Should not contain markdown headers
+      expect(output).not.toContain('# Specification Coverage Report');
+    } catch (error: any) {
+      console.error('Command failed:', command);
+      console.error('stdout:', error.stdout?.toString());
+      console.error('stderr:', error.stderr?.toString());
+      throw error;
+    }
+  });
 
-      // 出力に期待する文字列が含まれているか確認
-      expect(output).toContain(expectedOutput);
-    } catch (error) {
-      // エラーが発生した場合、テストを失敗させる
-      // エラー内容も出力するとデバッグに役立ちます
-      console.error('Test failed with error:', error);
+  it('should output JSON format when --json flag is used', () => {
+    const command = `node ${path.join(__dirname, '..', 'dist', 'cli.js')} --config ${path.join(examplesDir, 'spec-matcher.config.ts')} --json`;
+    
+    try {
+      const output = execSync(command, { encoding: 'utf-8' });
+
+      // Parse JSON to ensure it's valid
+      const jsonResult = JSON.parse(output);
+      
+      expect(jsonResult).toHaveProperty('summary');
+      expect(jsonResult).toHaveProperty('requirements');
+      expect(jsonResult.summary).toHaveProperty('totalRequirements', 4);
+      expect(jsonResult.summary).toHaveProperty('coveredRequirements', 4);
+      expect(jsonResult.summary).toHaveProperty('coveragePercentage', 100);
+      expect(jsonResult.requirements).toHaveLength(4);
+    } catch (error: any) {
+      console.error('Command failed:', command);
+      console.error('stdout:', error.stdout?.toString());
+      console.error('stderr:', error.stderr?.toString());
+      throw error;
+    }
+  });
+
+  it('should show help when --help flag is used', () => {
+    const command = `node ${path.join(__dirname, '..', 'dist', 'cli.js')} --help`;
+    
+    try {
+      const output = execSync(command, { encoding: 'utf-8' });
+
+      expect(output).toContain('Usage: spec-trace [options]');
+      expect(output).toContain('--config <path>');
+      expect(output).toContain('--verbose');
+      expect(output).toContain('--json');
+      expect(output).toContain('--summary-only');
+    } catch (error: any) {
+      console.error('Command failed:', command);
+      console.error('stdout:', error.stdout?.toString());
+      console.error('stderr:', error.stderr?.toString());
       throw error;
     }
   });
