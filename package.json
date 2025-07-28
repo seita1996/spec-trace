@@ -42,7 +42,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/glob": "^8.1.0",
-    "@types/marked": "^5.0.1",
+    "@types/marked": "^6.0.0",
     "@types/node": "^24.0.15",
     "rimraf": "^6.0.1",
     "typescript": "^5.1.6",
